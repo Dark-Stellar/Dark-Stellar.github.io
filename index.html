@@ -33,9 +33,12 @@
       --shadow-glow: 0 0 35px rgba(37, 99, 235, 0.15);
       --particle-color: 37, 99, 235;
       --particle-line: 37, 99, 235;
-      --aurora-1: rgba(37, 99, 235, 0.13);
-      --aurora-2: rgba(8, 145, 178, 0.11);
-      --aurora-3: rgba(124, 58, 237, 0.09);
+      --aurora-1: rgba(37, 99, 235, 0.12);
+      --aurora-2: rgba(8, 145, 178, 0.09);
+      --aurora-3: rgba(124, 58, 237, 0.08);
+      --minimal-grad-1: #F1F5F9;
+      --minimal-grad-2: #E2E8F0;
+      --minimal-grad-3: #CBD5E1;
       --radius-md: 14px;
       --radius-lg: 20px;
       --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -70,9 +73,12 @@
       --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.22);
       --particle-color: 96, 165, 250;
       --particle-line: 56, 189, 248;
-      --aurora-1: rgba(59, 130, 246, 0.18);
-      --aurora-2: rgba(34, 211, 238, 0.12);
-      --aurora-3: rgba(139, 92, 246, 0.14);
+      --aurora-1: rgba(59, 130, 246, 0.22);
+      --aurora-2: rgba(34, 211, 238, 0.17);
+      --aurora-3: rgba(139, 92, 246, 0.19);
+      --minimal-grad-1: #030712;
+      --minimal-grad-2: #0B1120;
+      --minimal-grad-3: #111827;
     }
 
     * {
@@ -98,8 +104,11 @@
     /* ==========================================================================
        DYNAMIC BACKGROUND SYSTEM (CANVAS + AMBIENT AURORA ORBS)
        ========================================================================== */
+    /* ==========================================================================
+       BACKGROUND LAYERS: NEURAL CANVAS + AURORA ORBS
+       ========================================================================== */
     .bg-layer {
-      position: fixed;
+      position: absolute;
       inset: 0;
       z-index: -2;
       pointer-events: none;
@@ -114,47 +123,86 @@
       z-index: -1;
       pointer-events: none;
       opacity: 1;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.6s ease;
+    }
+
+    .aurora {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      overflow: hidden;
+      opacity: 1;
+      transition: opacity 0.6s ease;
     }
 
     .aurora-orb {
       position: absolute;
       border-radius: 50%;
-      filter: blur(90px);
-      animation: floatOrb 18s ease-in-out infinite alternate;
-      transition: opacity 0.4s ease;
+      filter: blur(100px);
+      animation: floatOrb 22s ease-in-out infinite alternate;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      will-change: transform, opacity;
     }
 
     .orb-1 {
-      width: 520px;
-      height: 520px;
+      width: 700px;
+      height: 700px;
       background: var(--aurora-1);
-      top: -120px;
-      left: -100px;
+      top: -180px;
+      left: -140px;
+      animation-delay: 0s;
+      animation-duration: 24s;
     }
 
     .orb-2 {
-      width: 460px;
-      height: 460px;
+      width: 620px;
+      height: 620px;
       background: var(--aurora-2);
-      top: 28%;
-      right: -120px;
-      animation-delay: -6s;
+      top: 30%;
+      right: -160px;
+      animation-delay: -8s;
+      animation-duration: 20s;
     }
 
     .orb-3 {
-      width: 500px;
-      height: 500px;
+      width: 660px;
+      height: 660px;
       background: var(--aurora-3);
-      bottom: -140px;
-      left: 22%;
-      animation-delay: -11s;
+      bottom: -180px;
+      left: 18%;
+      animation-delay: -14s;
+      animation-duration: 26s;
     }
 
     @keyframes floatOrb {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(40px, 30px) scale(1.08); }
-      100% { transform: translate(-30px, 50px) scale(0.95); }
+      0%   { transform: translate(0, 0) scale(1); }
+      33%  { transform: translate(35px, -40px) scale(1.1); }
+      66%  { transform: translate(-25px, 60px) scale(0.95); }
+      100% { transform: translate(60px, 20px) scale(1.05); }
+    }
+
+    /* ==========================================================================
+       MINIMAL BACKGROUND (STATIC CLEAN FALLBACK)
+       ========================================================================== */
+    .minimal-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      background: linear-gradient(135deg, var(--minimal-grad-1) 0%, var(--minimal-grad-2) 55%, var(--minimal-grad-3) 100%);
+      opacity: 1;
+      transition: opacity 0.6s ease;
+    }
+
+    .minimal-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.35;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(148, 163, 184, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(148, 163, 184, 0.06) 0%, transparent 45%);
     }
 
     /* Subtle Tech Grid Overlay */
@@ -164,9 +212,9 @@
       z-index: -1;
       pointer-events: none;
       background-image:
-        linear-gradient(to right, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
-      background-size: 48px 48px;
+        linear-gradient(to right, var(--border-color) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border-color) 1px, transparent 1px);
+      background-size: 56px 56px;
       mask-image: radial-gradient(ellipse at 50% 30%, black 45%, transparent 90%);
       -webkit-mask-image: radial-gradient(ellipse at 50% 30%, black 45%, transparent 90%);
     }
@@ -1115,11 +1163,14 @@
 </head>
 <body>
 
-  <!-- DYNAMIC BACKGROUND LAYER (Ambient Aurora Orbs + Interactive Neural Canvas) -->
-  <div class="bg-layer" id="auroraLayer">
-    <div class="aurora-orb orb-1"></div>
-    <div class="aurora-orb orb-2"></div>
-    <div class="aurora-orb orb-3"></div>
+  <!-- DYNAMIC BACKGROUND LAYER (Minimal Fallback + Ambient Aurora Orbs + Interactive Neural Canvas) -->
+  <div class="minimal-bg" id="minimalBg"></div>
+  <div class="aurora" id="auroraLayer">
+    <div class="bg-layer">
+      <div class="aurora-orb orb-1"></div>
+      <div class="aurora-orb orb-2"></div>
+      <div class="aurora-orb orb-3"></div>
+    </div>
   </div>
   <div class="bg-grid-overlay"></div>
   <canvas id="bgCanvas" aria-hidden="true"></canvas>
@@ -1751,10 +1802,11 @@
     const PORTFOLIO_CONFIG = {
       defaultTheme: 'dark',          // 'dark' (Dark-Stellar mode) or 'light' (Editorial Light mode)
       defaultBgMode: 'neural',       // 'neural' (Interactive AI Graph), 'aurora' (Soft Glow only), or 'minimal' (Clean Static)
-      particleCount: 68,             // Number of neural embedding nodes on desktop
-      connectionDistance: 145,       // Max distance (px) to draw attention lines between nodes
-      mouseRadius: 170,              // Interactive cursor attraction/connection radius (px)
-      particleSpeed: 0.45            // Movement speed of nodes (0.2 = slow, 1.0 = fast)
+      particleCount: 150,            // Number of neural embedding nodes on desktop (denser constellation)
+      particleCountMobile: 75,       // Number of nodes on mobile
+      connectionDistance: 150,       // Max distance (px) to draw attention lines between nodes
+      mouseRadius: 180,              // Interactive cursor attraction/connection radius (px)
+      particleSpeed: 0.38            // Movement speed of nodes (0.2 = slow, 1.0 = fast)
     };
     // =========================================================================
 
@@ -1765,6 +1817,7 @@
     const bgModeLabel = document.getElementById('bgModeLabel');
     const canvas = document.getElementById('bgCanvas');
     const auroraLayer = document.getElementById('auroraLayer');
+    const minimalBg = document.getElementById('minimalBg');
     const ctx = canvas.getContext('2d');
 
     let currentBgMode = PORTFOLIO_CONFIG.defaultBgMode;
@@ -1785,15 +1838,18 @@
       currentBgMode = mode;
       if (mode === 'neural') {
         canvas.style.opacity = '1';
-        auroraLayer.style.opacity = '1';
+        auroraLayer.style.opacity = '0.55';
+        minimalBg.style.opacity = '0';
         bgModeLabel.textContent = 'BG: Neural';
       } else if (mode === 'aurora') {
         canvas.style.opacity = '0';
         auroraLayer.style.opacity = '1';
+        minimalBg.style.opacity = '0';
         bgModeLabel.textContent = 'BG: Aurora';
       } else {
         canvas.style.opacity = '0';
         auroraLayer.style.opacity = '0';
+        minimalBg.style.opacity = '1';
         bgModeLabel.textContent = 'BG: Minimal';
       }
     }
@@ -1828,7 +1884,7 @@
     function initNodes() {
       nodes = [];
       const count = window.innerWidth < 768
-        ? Math.floor(PORTFOLIO_CONFIG.particleCount * 0.45)
+        ? PORTFOLIO_CONFIG.particleCountMobile
         : PORTFOLIO_CONFIG.particleCount;
       for (let i = 0; i < count; i++) {
         nodes.push({
@@ -1836,7 +1892,7 @@
           y: Math.random() * canvas.height,
           vx: (Math.random() - 0.5) * PORTFOLIO_CONFIG.particleSpeed * 2,
           vy: (Math.random() - 0.5) * PORTFOLIO_CONFIG.particleSpeed * 2,
-          r: Math.random() * 1.8 + 1.1
+          r: Math.random() * 2.2 + 1.2
         });
       }
     }
@@ -1848,6 +1904,13 @@
         const nodeRGB = styles.getPropertyValue('--particle-color').trim() || '96, 165, 250';
         const lineRGB = styles.getPropertyValue('--particle-line').trim() || '56, 189, 248';
 
+        // Subtle radial glow for the whole canvas
+        const glow = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height));
+        glow.addColorStop(0, `rgba(${nodeRGB}, 0.03)`);
+        glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         for (let i = 0; i < nodes.length; i++) {
           const n = nodes[i];
           n.x += n.vx;
@@ -1856,10 +1919,14 @@
           if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
           if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
 
-          // Draw node
+          // Draw node with soft glow halo
           ctx.beginPath();
           ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${nodeRGB}, 0.55)`;
+          ctx.fillStyle = `rgba(${nodeRGB}, 0.6)`;
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r * 2.6, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${nodeRGB}, 0.14)`;
           ctx.fill();
 
           // Connect nearby nodes
@@ -1869,12 +1936,12 @@
             const dy = n.y - n2.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < PORTFOLIO_CONFIG.connectionDistance) {
-              const alpha = (1 - dist / PORTFOLIO_CONFIG.connectionDistance) * 0.22;
+              const alpha = (1 - dist / PORTFOLIO_CONFIG.connectionDistance) * 0.17;
               ctx.beginPath();
               ctx.moveTo(n.x, n.y);
               ctx.lineTo(n2.x, n2.y);
               ctx.strokeStyle = `rgba(${lineRGB}, ${alpha})`;
-              ctx.lineWidth = 1;
+              ctx.lineWidth = 0.8;
               ctx.stroke();
             }
           }
@@ -1885,12 +1952,12 @@
             const mdy = n.y - mouse.y;
             const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
             if (mdist < PORTFOLIO_CONFIG.mouseRadius) {
-              const mAlpha = (1 - mdist / PORTFOLIO_CONFIG.mouseRadius) * 0.42;
+              const mAlpha = (1 - mdist / PORTFOLIO_CONFIG.mouseRadius) * 0.38;
               ctx.beginPath();
               ctx.moveTo(n.x, n.y);
               ctx.lineTo(mouse.x, mouse.y);
-              ctx.strokeStyle = `rgba(${lineRGB}, ${mAlpha})`;
-              ctx.lineWidth = 1.2;
+              ctx.strokeStyle = `rgba(${nodeRGB}, ${mAlpha})`;
+              ctx.lineWidth = 1.1;
               ctx.stroke();
             }
           }
@@ -1944,5 +2011,5 @@
       });
     }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4f2337d48cb7871',t:'MTc5Mjc3MzgxMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4f2337d48cb7871',t:'MTc5Mjc3MzgxMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4f6d8b59c96786e',t:'MTc5MjgyMjUyMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
